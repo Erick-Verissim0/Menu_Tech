@@ -10,8 +10,6 @@ import { listProducts } from './app/useCases/products/listProducts';
 import { createProduct } from './app/useCases/products/createProduct';
 import { listOrders } from './app/useCases/orders/listOrders';
 import { createOrder } from './app/useCases/orders/createOrder';
-import { changeOrderSatus } from './app/useCases/orders/changeOrderSatus';
-import { cancelOrder } from './app/useCases/orders/cancelOrder';
 
 export const router = Router();
 
@@ -39,9 +37,3 @@ router.post('/products', /* upload.single('image'), */ createProduct);
 router.get('/orders', listOrders);
 
 router.post('/orders', createOrder);
-
-router.post('/orders/:orderId', createOrder);
-
-router.patch('/orders/:orderId', changeOrderSatus);
-
-router.delete('/orders/:orderId', cancelOrder);

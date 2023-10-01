@@ -1,14 +1,21 @@
 import { Request, Response } from 'express';
-
-// import { Order } from "../../models/Order";
+import { MysqlConnection } from '../../..';
 
 export async function createOrder(req: Request, res: Response) {
   try {
-    const { table, products } = req.body;
+    const connection = await MysqlConnection();
 
-    //    const order = await Order.create({ table, products });
+    const { table_id, product_id, total_value } = req.body;
 
-    // res.status(201).send(order);
+    const sql = 'INSERT INTO orders (table_id, product_id, total_value) VALUES (?, ?, ?)';
+
+    const inputValues = [table_id, product_id, total_value];
+
+    const [result] = await connection.execute(sql, inputValues);
+
+    connection.end();
+
+    res.status(201).end();
   } catch (error) {
     res.sendStatus(500);
 
