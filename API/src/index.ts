@@ -8,12 +8,28 @@ import { database } from '../database/index.ts';
 import { MysqlUsers } from '../database/models/users';
 import { MysqlTables } from '../database/models/tables';
 import { MysqlProducts } from '../database/models/products';
-import { MysqlRequests } from '../database/models/requests';
+import { MysqlOrders } from '../database/models/orders';
 
 export async function MysqlConnection() {
-  const connection: mysql.Connection = await mysql.createConnection(database);
+  try {
+    const connection: mysql.Connection = await mysql.createConnection(database);
 
-  return connection;
+    return connection;
+  } catch (error) {
+    const createDatabaseConfig = {
+      host: 'localhost',
+      user: 'root',
+      password: 'root',
+    };
+
+    const createConnection = await mysql.createConnection(createDatabaseConfig);
+
+    await createConnection.query(`CREATE DATABASE IF NOT EXISTS ${database.database}`);
+    console.log(`Banco de dados '${database.database}' criado com sucesso.`);
+
+    const retryConnection = await mysql.createConnection(database);
+    return retryConnection;
+  }
 }
 
 async function main() {
@@ -23,7 +39,7 @@ async function main() {
     await connection.execute(MysqlUsers);
     await connection.execute(MysqlTables);
     await connection.execute(MysqlProducts);
-    await connection.execute(MysqlRequests);
+    await connection.execute(MysqlOrders);
 
     const app = express();
     const port = 3001;
