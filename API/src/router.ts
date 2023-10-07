@@ -1,51 +1,28 @@
-import path from 'node:path';
-
 import { Router } from 'express';
-import multer from 'multer';
 
-/* import { createCategory } from './app/useCases/categories/createCategory';
-import { listCategories } from './app/useCases/categories/listCategory';
-import { listProductsByCategory } from './app/useCases/categories/listProductsByCategory'; */
-import { listProducts } from './app/useCases/products/listProducts';
-import { createProduct } from './app/useCases/products/createProduct';
-import { listOrders } from './app/useCases/orders/listOrders';
-import { createOrder } from './app/useCases/orders/createOrder';
-import { createTable } from './app/useCases/tables/createTable';
-import { deleteTable } from './app/useCases/tables/deleteTable';
-import { listTables } from './app/useCases/tables/listTables';
-import { updateProduct } from './app/useCases/products/updateProduct';
+import { createTableController } from './app/controllers/tables/createTable.controller';
+import { listTablesController } from './app/controllers/tables/listTables.controller';
+import { deleteTableController } from './app/controllers/tables/deleteTable.controller';
+import { listProductsController } from './app/controllers/products/listProducts.controller';
+import { createProductController } from './app/controllers/products/createProduct.controller';
+import { updateProductController } from './app/controllers/products/updateProduct.controller';
+import { listOrdersController } from './app/controllers/orders/listOrders.controller';
+import { createOrdersController } from './app/controllers/orders/createOrder.controller';
 
 export const router = Router();
 
-/* const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, callback) {
-      callback(null, path.resolve(__dirname, '..', 'uploads'));
-    },
-    filename(req, file, callback) {
-      callback(null, `${Date.now()}-${file.originalname}`);
-    },
-  }),
-}); */
+router.get('/products', listProductsController);
 
-/* router.get('/categories', listCategories);
+router.post('/product', createProductController);
 
-router.post('/categories', createCategory);
+router.patch('/product/:id', updateProductController);
 
-router.get('/categories/:categoryId/products', listProductsByCategory); */
+router.get('/tables', listTablesController);
 
-router.get('/products', listProducts);
+router.post('/table', createTableController);
 
-router.post('/product', /* upload.single('image'), */ createProduct);
+router.delete('/table/:id', deleteTableController);
 
-router.patch('/product/:id', updateProduct);
+router.get('/orders', listOrdersController);
 
-router.get('/tables', listTables);
-
-router.post('/table', createTable);
-
-router.delete('/table/:id', deleteTable);
-
-router.get('/orders', listOrders);
-
-router.post('/order', createOrder);
+router.post('/order', createOrdersController);

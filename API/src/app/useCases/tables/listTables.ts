@@ -5,7 +5,7 @@ export async function listTables(req: Request, res: Response) {
   try {
     const connection = await MysqlConnection();
 
-    const [rows, fields] = await connection.execute('SELECT * FROM tables');
+    const [rows, fields] = await connection.execute('SELECT * FROM tables ORDER BY table_number ASC');
 
     connection.end();
 

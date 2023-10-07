@@ -17,7 +17,6 @@ export async function updateProduct(req: Request, res: Response) {
     }
 
     if (typeof value === 'number') {
-      console.log('aqui');
       sql += 'value = ?, ';
       inputValues.push(value);
     }
