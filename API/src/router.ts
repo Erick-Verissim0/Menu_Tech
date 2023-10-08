@@ -8,8 +8,11 @@ import { createProductController } from './app/controllers/products/createProduc
 import { updateProductController } from './app/controllers/products/updateProduct.controller';
 import { listOrdersController } from './app/controllers/orders/listOrders.controller';
 import { createOrdersController } from './app/controllers/orders/createOrder.controller';
+import { createUserController } from './app/controllers/users/createUser.controller';
 
 export const router = Router();
+
+router.post('/user', createUserController);
 
 router.get('/products', listProductsController);
 

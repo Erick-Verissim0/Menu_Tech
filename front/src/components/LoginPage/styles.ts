@@ -64,3 +64,17 @@ export const CreateCountButton = styled.button`
   border: none;
   cursor: pointer;
 `;
+
+export const ErrorMessage = styled.p`
+  color: red;
+  font-size: 14px;
+  margin: 5px 0px 20px;
+  text-align: center;
+`;
+
+export const CreateUserMessage = styled.p`
+  color: green;
+  font-size: 14px;
+  margin: 5px 0px 20px;
+  text-align: center;
+`;

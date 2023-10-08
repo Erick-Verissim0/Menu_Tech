@@ -10,15 +10,65 @@ import {
   Title,
   CreateCountButton,
   ChangeCollorButton,
+  ErrorMessage,
+  CreateUserMessage,
 } from './styles';
 import loginPageImage from '../../assets/images/login-page.jpg';
 
 export function LoginPage() {
   const [createCountMode, setCreateCountMode] = useState(false);
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [createUserMessage, setCreateUserMessage] = useState('');
 
   const toggleCreateCount = () => {
+    setErrorMessage('');
+    setCreateUserMessage('');
     setCreateCountMode(!createCountMode);
+  };
+
+  const isFormValid = () => {
+    if (createCountMode) {
+      return name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
+    } else {
+      return email.trim() !== '' && password.trim() !== '';
+    }
+  };
+
+  const handleSubmit = async () => {
+    const userData = {
+      name,
+      email,
+      password,
+    };
+
+    if (!isFormValid()) {
+      setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+    setName('');
+    setEmail('');
+    setPassword('');
+    setErrorMessage('');
+    setCreateUserMessage('Usuário criado com sucesso!');
+
+    try {
+      const response = await fetch('http://localhost:3001/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      /* if (response.ok) {
+      } else {
+      } */
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -30,9 +80,16 @@ export function LoginPage() {
         <Title>{createCountMode ? 'Crie uma Conta' : 'Faça o Login'}</Title>
         {createCountMode && <Fields type="text" placeholder="Digite seu nome" value={name} onChange={(e) => setName(e.target.value)} />}
 
-        <Fields type="email" placeholder="Digite seu e-mail" />
-        <Fields type="password" placeholder="Digite sua senha" />
-        {createCountMode ? <LoginButton> Criar Conta </LoginButton> : <LoginButton>Entrar</LoginButton>}
+        <Fields type="email" placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Fields type="password" placeholder="Digite sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+
+        {createCountMode ? <LoginButton onClick={handleSubmit}>Criar Conta</LoginButton> : <LoginButton>Entrar</LoginButton>}
+
+        {errorMessage ? (
+          <ErrorMessage>{errorMessage}</ErrorMessage>
+        ) : (
+          createUserMessage && <CreateUserMessage>{createUserMessage}</CreateUserMessage>
+        )}
 
         <span>
           {createCountMode ? 'Já possui conta? ' : 'Não tem uma conta? '}

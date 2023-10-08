@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'node:path';
+import cors from 'cors';
 import * as mysql from 'mysql2/promise';
 
 import { router } from './router';
@@ -44,6 +45,11 @@ async function main() {
     const app = express();
     const port = 3001;
 
+    const corsOptions = {
+      origin: '*',
+    };
+
+    app.use(cors(corsOptions));
     app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
     app.use(express.json());
     app.use(router);
