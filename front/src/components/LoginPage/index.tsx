@@ -11,7 +11,7 @@ import {
   CreateCountButton,
   ChangeCollorButton,
   ErrorMessage,
-  CreateUserMessage,
+  Message,
 } from './styles';
 import loginPageImage from '../../assets/images/login-page.jpg';
 
@@ -22,16 +22,20 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [createUserMessage, setCreateUserMessage] = useState('');
+  const [loginUserMessage, setLoginUserMessage] = useState('');
 
   const toggleCreateCount = () => {
     setErrorMessage('');
+    setLoginUserMessage('');
     setCreateUserMessage('');
     setCreateCountMode(!createCountMode);
   };
 
   const isFormValid = () => {
     if (createCountMode) {
-      return name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
+      return (
+        name.trim() !== '' && email.trim() !== '' && password.trim() !== ''
+      );
     } else {
       return email.trim() !== '' && password.trim() !== '';
     }
@@ -52,16 +56,27 @@ export function LoginPage() {
     setEmail('');
     setPassword('');
     setErrorMessage('');
+    setLoginUserMessage('Usuário logado com sucesso!');
     setCreateUserMessage('Usuário criado com sucesso!');
 
     try {
-      const response = await fetch('http://localhost:3001/user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
+      if (createCountMode === true) {
+        const createUser = await fetch('http://localhost:3001/user/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        });
+      } else {
+        const loginUser = await fetch('http://localhost:3001/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(userData),
+        });
+      }
 
       /* if (response.ok) {
       } else {
@@ -78,23 +93,47 @@ export function LoginPage() {
       </ImageContainer>
       <ContainerFields>
         <Title>{createCountMode ? 'Crie uma Conta' : 'Faça o Login'}</Title>
-        {createCountMode && <Fields type="text" placeholder="Digite seu nome" value={name} onChange={(e) => setName(e.target.value)} />}
 
-        <Fields type="email" placeholder="Digite seu e-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Fields type="password" placeholder="Digite sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
+        {createCountMode && (
+          <Fields
+            type="text"
+            placeholder="Digite seu nome"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
 
-        {createCountMode ? <LoginButton onClick={handleSubmit}>Criar Conta</LoginButton> : <LoginButton>Entrar</LoginButton>}
+        <Fields
+          type="email"
+          placeholder="Digite seu e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Fields
+          type="password"
+          placeholder="Digite sua senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        {createCountMode ? (
+          <LoginButton onClick={handleSubmit}>Criar Conta</LoginButton>
+        ) : (
+          <LoginButton onClick={handleSubmit}>Entrar</LoginButton>
+        )}
 
         {errorMessage ? (
           <ErrorMessage>{errorMessage}</ErrorMessage>
         ) : (
-          createUserMessage && <CreateUserMessage>{createUserMessage}</CreateUserMessage>
+          loginUserMessage && <Message>{loginUserMessage}</Message>
         )}
 
         <span>
           {createCountMode ? 'Já possui conta? ' : 'Não tem uma conta? '}
           <CreateCountButton onClick={toggleCreateCount}>
-            <ChangeCollorButton>{createCountMode ? 'Faça Login' : 'Criar Conta'}</ChangeCollorButton>
+            <ChangeCollorButton>
+              {createCountMode ? 'Faça Login' : 'Criar Conta'}
+            </ChangeCollorButton>
           </CreateCountButton>
         </span>
       </ContainerFields>

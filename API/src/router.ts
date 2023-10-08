@@ -9,10 +9,13 @@ import { updateProductController } from './app/controllers/products/updateProduc
 import { listOrdersController } from './app/controllers/orders/listOrders.controller';
 import { createOrdersController } from './app/controllers/orders/createOrder.controller';
 import { createUserController } from './app/controllers/users/createUser.controller';
+import { loginUserController } from './app/controllers/users/loginUser.controller';
 
 export const router = Router();
 
-router.post('/user', createUserController);
+router.post('/user/create', createUserController);
+
+router.post('/user/login', loginUserController);
 
 router.get('/products', listProductsController);
 

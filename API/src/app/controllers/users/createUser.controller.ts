@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser } from "../../useCases/users/loginUser";
+import { createUser } from "../../useCases/users/createUser";
 
 export async function createUserController(req: Request, res: Response) {
   try {
