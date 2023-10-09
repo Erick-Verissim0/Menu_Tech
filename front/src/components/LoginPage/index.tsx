@@ -14,6 +14,7 @@ import {
   Message,
 } from './styles';
 import loginPageImage from '../../assets/images/login-page.jpg';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
   const [createCountMode, setCreateCountMode] = useState(false);
@@ -30,6 +31,8 @@ export function LoginPage() {
     setCreateUserMessage('');
     setCreateCountMode(!createCountMode);
   };
+
+  const navigate = useNavigate();
 
   const isFormValid = () => {
     if (createCountMode) {
@@ -76,11 +79,17 @@ export function LoginPage() {
           },
           body: JSON.stringify(userData),
         });
-      }
 
-      /* if (response.ok) {
-      } else {
-      } */
+        if (loginUser.ok) {
+          const user = await loginUser.json();
+
+          if (user) {
+            setTimeout(() => {
+              navigate('/');
+            }, 2000);
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
     }
