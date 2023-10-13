@@ -4,7 +4,7 @@ export function InitialPage() {
   return (
     <>
       <Teste>
-        <h1>olá</h1>
+        <h1>Home</h1>
       </Teste>
     </>
   );

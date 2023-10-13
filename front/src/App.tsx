@@ -11,7 +11,7 @@ export function App() {
       <GlobalStyles />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<InitialPage />} />
+        <Route path="/home" element={<InitialPage />} />
       </Routes>
     </Router>
   );

@@ -3,17 +3,22 @@ import styled from 'styled-components';
 export const Container = styled.div`
   display: flex;
   height: 100vh;
+  width: 100%;
   background-color: #f0f2eb;
 `;
 
 export const ImageContainer = styled.div`
-  flex: 0 0 50%; /* A imagem ocupa 50% da largura da tela */
+  flex: 0 0 50%;
   height: 100%;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 `;
 
 export const Image = styled.img`
-  width: 100%; /* Garante que a imagem ocupe toda a largura do container */
-  height: 100%; /* Mantém a proporção da imagem */
+  width: 100%;
+  height: 100%;
 `;
 
 export const ContainerFields = styled.div`
@@ -22,8 +27,12 @@ export const ContainerFields = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20vh;
+  padding: 15vh;
   color: black;
+
+  @media (max-width: 800px) {
+    padding: 0;
+  }
 `;
 
 export const Title = styled.h1`
@@ -39,7 +48,11 @@ export const Fields = styled.input`
   border-bottom: 2px solid #007bff;
   border-color: #51445f;
   background-color: transparent;
-  outline: none; /* Remove a borda ao focar */
+  outline: none;
+
+  @media (max-width: 800px) {
+    width: 80%;
+  }
 `;
 
 export const LoginButton = styled.button`
@@ -53,7 +66,7 @@ export const LoginButton = styled.button`
 `;
 
 export const ChangeCollorButton = styled.button`
-  color: #7a8c89;
+  color: #1a0b2a;
   border: none;
   font-weight: 500;
 `;
