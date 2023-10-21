@@ -10,7 +10,7 @@ export function App() {
     <Router>
       <GlobalStyles />
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/home" element={<InitialPage />} />
       </Routes>
     </Router>

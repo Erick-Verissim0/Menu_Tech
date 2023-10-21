@@ -59,7 +59,6 @@ export function LoginPage() {
     setEmail('');
     setPassword('');
     setErrorMessage('');
-    setLoginUserMessage('Usuário logado com sucesso!');
     setCreateUserMessage('Usuário criado com sucesso!');
 
     try {
@@ -71,6 +70,7 @@ export function LoginPage() {
           },
           body: JSON.stringify(userData),
         });
+        return;
       } else {
         const loginUser = await fetch('http://localhost:3001/user/login', {
           method: 'POST',
@@ -84,14 +84,18 @@ export function LoginPage() {
           const user = await loginUser.json();
 
           if (user) {
+            setLoginUserMessage('Usuário logado com sucesso!');
             setTimeout(() => {
-              navigate('/');
+              navigate('/home');
             }, 2000);
+            return;
           }
         }
+        setErrorMessage('Erro ao fazer login. Por favor, tente novamente.');
       }
     } catch (error) {
       console.log(error);
+      setLoginUserMessage('cath');
     }
   };
 
