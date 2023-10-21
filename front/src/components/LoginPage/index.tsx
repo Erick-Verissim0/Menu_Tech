@@ -91,7 +91,7 @@ export function LoginPage() {
             return;
           }
         }
-        setErrorMessage('Erro ao fazer login. Por favor, tente novamente.');
+        setErrorMessage('Erro ao fazer login. Por favor, verifique seu e-mail e senha.');
       }
     } catch (error) {
       console.log(error);
