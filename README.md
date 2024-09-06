@@ -1,4 +1,4 @@
-START_FRONT_PROJECT =n pm run dev
+START_FRONT_PROJECT = npm run dev
 START_BACK_PROJECT = npm run dev
 
 NODE_VERSION = 18.16.0
