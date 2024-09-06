@@ -9,7 +9,7 @@ export function Header() {
       <Content>
         <div className="page-details">
           <h1> Menu Tech </h1>
-          <h2> A plataforma ideal para quem quer ter o restaurante ideal! </h2>
+          <h2> A plataforma ideal para quem deseja ter o restaurante ideal! </h2>
         </div>
 
         <img src={logo} alt="Menu Tech" />

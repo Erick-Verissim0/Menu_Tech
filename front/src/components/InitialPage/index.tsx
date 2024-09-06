@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../Header';
 import { Container, Content, Table, Td, Th } from './styles';
+import { Footer } from '../Footer';
 
 type Order = {
   id: number;
@@ -54,6 +55,7 @@ export function InitialPage() {
           </Table>
         </Content>
       </Container>
+      <Footer />
     </>
   );
 }
