@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import {
   LoginButton,
   Fields,
@@ -45,34 +44,60 @@ export function LoginPage() {
   };
 
   const handleSubmit = async () => {
+    if (!isFormValid()) {
+      setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    setName('');
+    setEmail('');
+    setPassword('');
+    setErrorMessage('');
+
     const userData = {
       name,
       email,
       password,
     };
 
-    if (!isFormValid()) {
-      setErrorMessage('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-    setName('');
-    setEmail('');
-    setPassword('');
-    setErrorMessage('');
-    setCreateUserMessage('Usuário criado com sucesso!');
-
     try {
-      if (createCountMode === true) {
-        const createUser = await fetch('http://localhost:3001/user/create', {
+      if (createCountMode) {
+        const createUserResponse = await fetch('http://localhost:3001/user/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(userData),
         });
-        return;
+
+        if (createUserResponse.ok) {
+          setCreateUserMessage('Usuário criado com sucesso!');
+
+          const loginUserRequisition = await fetch('http://localhost:3001/user/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+          });
+
+          if (loginUserRequisition.ok) {
+            const user = await loginUserRequisition.json();
+            if (user) {
+              setLoginUserMessage('Usuário logado com sucesso!');
+              setTimeout(() => {
+                navigate('/home');
+              }, 2000);
+              return;
+            }
+          }
+
+          setErrorMessage('Erro ao fazer login após criar a conta.');
+        } else {
+          setErrorMessage('Erro ao criar conta. Por favor, tente novamente.');
+        }
       } else {
-        const loginUser = await fetch('http://localhost:3001/user/login', {
+        const loginUserRequisition = await fetch('http://localhost:3001/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -80,9 +105,8 @@ export function LoginPage() {
           body: JSON.stringify(userData),
         });
 
-        if (loginUser.ok) {
-          const user = await loginUser.json();
-
+        if (loginUserRequisition.ok) {
+          const user = await loginUserRequisition.json();
           if (user) {
             setLoginUserMessage('Usuário logado com sucesso!');
             setTimeout(() => {
@@ -91,11 +115,12 @@ export function LoginPage() {
             return;
           }
         }
+
         setErrorMessage('Erro ao fazer login. Por favor, verifique seu e-mail e senha.');
       }
     } catch (error) {
       console.log(error);
-      setLoginUserMessage('cath');
+      setErrorMessage('Erro de comunicação com o servidor.');
     }
   };
 
