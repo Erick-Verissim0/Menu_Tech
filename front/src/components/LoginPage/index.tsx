@@ -14,6 +14,7 @@ import {
 } from './styles';
 import loginPageImage from '../../assets/images/login-page.jpg';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/login.auth'; 
 
 export function LoginPage() {
   const [createCountMode, setCreateCountMode] = useState(false);
@@ -24,6 +25,9 @@ export function LoginPage() {
   const [createUserMessage, setCreateUserMessage] = useState('');
   const [loginUserMessage, setLoginUserMessage] = useState('');
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const toggleCreateCount = () => {
     setErrorMessage('');
     setLoginUserMessage('');
@@ -31,13 +35,9 @@ export function LoginPage() {
     setCreateCountMode(!createCountMode);
   };
 
-  const navigate = useNavigate();
-
   const isFormValid = () => {
     if (createCountMode) {
-      return (
-        name.trim() !== '' && email.trim() !== '' && password.trim() !== ''
-      );
+      return name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
     } else {
       return email.trim() !== '' && password.trim() !== '';
     }
@@ -49,11 +49,6 @@ export function LoginPage() {
       return;
     }
 
-    setName('');
-    setEmail('');
-    setPassword('');
-    setErrorMessage('');
-
     const userData = {
       name,
       email,
@@ -64,62 +59,45 @@ export function LoginPage() {
       if (createCountMode) {
         const createUserResponse = await fetch('http://localhost:3001/user/create', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userData),
         });
 
         if (createUserResponse.ok) {
           setCreateUserMessage('Usuário criado com sucesso!');
-
-          const loginUserRequisition = await fetch('http://localhost:3001/user/login', {
+          const loginUserResponse = await fetch('http://localhost:3001/user/login', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData),
           });
 
-          if (loginUserRequisition.ok) {
-            const user = await loginUserRequisition.json();
-            if (user) {
-              setLoginUserMessage('Usuário logado com sucesso!');
-              setTimeout(() => {
-                navigate('/home');
-              }, 2000);
-              return;
-            }
+          if (loginUserResponse.ok) {
+            const user = await loginUserResponse.json();
+            login({ name: user.name, email: user.email });
+            navigate('/home');
+            return;
           }
-
           setErrorMessage('Erro ao fazer login após criar a conta.');
         } else {
           setErrorMessage('Erro ao criar conta. Por favor, tente novamente.');
         }
       } else {
-        const loginUserRequisition = await fetch('http://localhost:3001/user/login', {
+        const loginUserResponse = await fetch('http://localhost:3001/user/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userData),
         });
 
-        if (loginUserRequisition.ok) {
-          const user = await loginUserRequisition.json();
-          if (user) {
-            setLoginUserMessage('Usuário logado com sucesso!');
-            setTimeout(() => {
-              navigate('/home');
-            }, 2000);
-            return;
-          }
+        if (loginUserResponse.ok) {
+          const user = await loginUserResponse.json();
+          login({ name: user.name, email: user.email });
+          navigate('/home');
+          return;
         }
-
         setErrorMessage('Erro ao fazer login. Por favor, verifique seu e-mail e senha.');
       }
     } catch (error) {
-      console.log(error);
+      console.error('Erro de comunicação com o servidor:', error);
       setErrorMessage('Erro de comunicação com o servidor.');
     }
   };
@@ -154,11 +132,9 @@ export function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {createCountMode ? (
-          <LoginButton onClick={handleSubmit}>Criar Conta</LoginButton>
-        ) : (
-          <LoginButton onClick={handleSubmit}>Entrar</LoginButton>
-        )}
+        <LoginButton onClick={handleSubmit}>
+          {createCountMode ? 'Criar Conta' : 'Entrar'}
+        </LoginButton>
 
         {errorMessage ? (
           <ErrorMessage>{errorMessage}</ErrorMessage>

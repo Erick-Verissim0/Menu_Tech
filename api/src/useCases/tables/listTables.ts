@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { MysqlConnection } from '../../..';
+import { MysqlConnection } from '../..';
 
 export async function listTables(req: Request, res: Response) {
   try {

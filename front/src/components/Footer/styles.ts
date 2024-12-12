@@ -9,7 +9,7 @@ export const Container = styled.footer`
   justify-content: center;
   bottom: 0;
   left: 0;
-  height: 60px;
+  height: 10vh;
 `;
 
 export const Content = styled.div`

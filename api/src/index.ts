@@ -10,6 +10,7 @@ import { MysqlUsers } from '../database/models/users';
 import { MysqlTables } from '../database/models/tables';
 import { MysqlProducts } from '../database/models/products';
 import { MysqlOrders } from '../database/models/orders';
+import { MysqlOrderProducts } from '../database/models/ordersProducts';
 
 export async function MysqlConnection() {
   try {
@@ -41,6 +42,7 @@ async function main() {
     await connection.execute(MysqlTables);
     await connection.execute(MysqlProducts);
     await connection.execute(MysqlOrders);
+    await connection.execute(MysqlOrderProducts);
 
     const app = express();
     const port = 3001;
