@@ -1,7 +1,24 @@
 import { useEffect, useState } from 'react';
 import { Header } from '../Header';
-import { Container, Content, EditButton, Table, Td, Th, Modal, ModalContent, Input, SaveButton, DeleteButton, CancelButton, ProductName, ProductPrice, ProductCheckboxLabel, ProductLabel } from './styles';
 import { Footer } from '../Footer';
+import {
+  Container,
+  Content,
+  EditButton,
+  Table,
+  Td,
+  Th,
+  Modal,
+  ModalContent,
+  Input,
+  SaveButton,
+  DeleteButton,
+  CancelButton,
+  ProductName,
+  ProductPrice,
+  ProductCheckboxLabel,
+  ProductLabel,
+} from './styles';
 
 type Product = {
   id: number;
@@ -29,6 +46,9 @@ export function InitialPage() {
   });
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [tableId, setTableId] = useState('');
+  const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
     fetch('http://localhost:3001/orders')
@@ -72,6 +92,14 @@ export function InitialPage() {
     setIsModalOpen(false);
   };
 
+  const openOrderModal = () => setIsOrderModalOpen(true);
+  const closeOrderModal = () => {
+    setIsOrderModalOpen(false);
+    setTableId('');
+    setSelectedProducts([]);
+    setTotalValue(0);
+  };
+
   const handleFieldChange = (field: string, value: string) => {
     setEditedFields((prev) => ({
       ...prev,
@@ -85,6 +113,18 @@ export function InitialPage() {
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
+  };
+
+  const handleProductSelection = (productId: number, productValue: number) => {
+    setSelectedProducts((prevSelected) => {
+      if (prevSelected.includes(productId)) {
+        setTotalValue((prevValue) => prevValue - productValue);
+        return prevSelected.filter((id) => id !== productId);
+      } else {
+        setTotalValue((prevValue) => prevValue + productValue);
+        return [...prevSelected, productId];
+      }
+    });
   };
 
   const handleSaveChanges = async () => {
@@ -121,31 +161,30 @@ export function InitialPage() {
     }
   };
 
-  const handleDeleteOrder = async () => {
-    if (selectedOrder) {
-      try {
-        const response = await fetch(`http://localhost:3001/order/update/${selectedOrder.id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            table_id: selectedOrder.table_id,
-            product_id: selectedOrder.products.map((product) => product.id),
-            total_value: selectedOrder.total_value,
-            deleted_at: true,
-          }),
-        });
+  const handleSubmitOrder = async () => {
+    const orderData = {
+      table_id: parseInt(tableId, 10),
+      products: selectedProducts,
+      total_value: totalValue,
+    };
 
-        if (response.ok) {
-          setOrders(orders.filter((order) => order.id !== selectedOrder.id));
-          closeModal();
-        } else {
-          console.error('Erro ao deletar pedido:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Erro ao deletar pedido:', error);
+    try {
+      const response = await fetch('http://localhost:3001/order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        alert('Pedido criado com sucesso!');
+        closeOrderModal();
+      } else {
+        alert('Erro ao criar pedido!');
       }
+    } catch (error) {
+      console.error('Erro ao criar pedido:', error);
     }
   };
 
@@ -181,6 +220,7 @@ export function InitialPage() {
               ))}
             </tbody>
           </Table>
+          <SaveButton onClick={openOrderModal}>Fazer Pedido</SaveButton>
         </Content>
       </Container>
       {isModalOpen && selectedOrder && (
@@ -200,14 +240,15 @@ export function InitialPage() {
               <div>
                 {products.map((product) => (
                   <ProductCheckboxLabel key={product.id}>
-                  <input
-                  type="checkbox"
-                  checked={selectedProducts.includes(product.id)}
-                  onChange={() => handleProductChange(product.id)}
-                  />
-                  <ProductName>{product.name}</ProductName> - <ProductPrice>R$ {product.value}</ProductPrice>
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => handleProductChange(product.id)}
+                    />
+                    <ProductName>{product.name}</ProductName> -{' '}
+                    <ProductPrice>R$ {product.value}</ProductPrice>
                   </ProductCheckboxLabel>
-                  ))}
+                ))}
               </div>
             </label>
             <label>
@@ -220,7 +261,43 @@ export function InitialPage() {
             </label>
             <SaveButton onClick={handleSaveChanges}>Salvar Alterações</SaveButton>
             <CancelButton onClick={closeModal}>Cancelar</CancelButton>
-            <DeleteButton onClick={handleDeleteOrder}>Deletar Pedido</DeleteButton>
+          </ModalContent>
+        </Modal>
+      )}
+      {isOrderModalOpen && (
+        <Modal>
+          <ModalContent>
+            <h2>Fazer Pedido</h2>
+            <label>
+              Mesa:
+              <Input
+                type="number"
+                value={tableId}
+                onChange={(e) => setTableId(e.target.value)}
+                placeholder="Número da mesa"
+              />
+            </label>
+            <label>
+              Produtos:
+              <div>
+                {products.map((product) => (
+                  <ProductCheckboxLabel key={product.id}>
+                    <input
+                      type="checkbox"
+                      onChange={() => handleProductSelection(product.id, product.value)}
+                      checked={selectedProducts.includes(product.id)}
+                    />
+                    <ProductName>{product.name}</ProductName> -{' '}
+                    <ProductPrice>R$ {product.value.toFixed(2)}</ProductPrice>
+                  </ProductCheckboxLabel>
+                ))}
+              </div>
+            </label>
+            <div>
+              <strong>Valor Total: R$ {totalValue.toFixed(2)}</strong>
+            </div>
+            <SaveButton onClick={handleSubmitOrder}>Enviar Pedido</SaveButton>
+            <CancelButton onClick={closeOrderModal}>Cancelar</CancelButton>
           </ModalContent>
         </Modal>
       )}
